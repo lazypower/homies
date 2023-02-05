@@ -1,3 +1,5 @@
 [user]
 	name = Chuck Butler
 	email = chuck@linuxlab.sh
+[init]
+	defaultBranch = main
