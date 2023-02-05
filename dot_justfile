@@ -33,6 +33,7 @@ setup-flatpaks:
   com.visualstudio.code \\
   no.mifi.losslesscut \\
   tv.plex.PlexDesktop \\
+  com.bitwarden.desktop \\
   md.obsidian.Obsidian 
 
 setup-pwa:
