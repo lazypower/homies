@@ -25,3 +25,6 @@ if [ -d ~/.bashrc.d ]; then
 fi
 
 unset rc
+
+# pre-exec for bash to load atuin
+[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
