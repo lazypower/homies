@@ -1,0 +1,28 @@
+export PATH=$HOME/.local/bin:$PATH
+
+if [ -d /home/linuxbrew ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+if [ "$(type starship)" != "starship not found" ]; then
+  eval "$(starship init zsh)"
+else
+  # If we dont have the rich features of starship, at least give me a minimal prompt
+  export PS1='%B%F{240}%1~%f%b -> '
+fi
+
+if [ "$(type direnv)" != "direnv not found" ]; then
+  eval "$(direnv hook zsh)"
+fi
+
+if [ "$(type atuin)" != "atuin not found" ]; then
+  eval "$(atuin init zsh)"
+fi
+
+if [ "$(type nvim)" != "nvim not found" ]; then
+  export EDITOR=nvim
+fi
+
+if [ "$(type direnv)" != "direnv not found" ]; then
+  eval "$(direnv hook zsh)"
+fi
