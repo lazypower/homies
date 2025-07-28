@@ -1,5 +1,6 @@
 export PATH=$HOME/.local/bin:$PATH
 
+# Bluefin homeberw location
 if [ -d /home/linuxbrew ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
@@ -21,8 +22,4 @@ fi
 
 if [ "$(type nvim)" != "nvim not found" ]; then
   export EDITOR=nvim
-fi
-
-if [ "$(type direnv)" != "direnv not found" ]; then
-  eval "$(direnv hook zsh)"
 fi
