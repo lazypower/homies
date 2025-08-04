@@ -158,3 +158,11 @@ tooltip {
   padding: 0 15px;
   border-left: 0px;
 }
+
+#custom-power {
+  color: #cba6f7;
+  border-left: 0px;
+  border-right: 0px;
+  border-radius: 0px 15px 15px 0px;
+  margin-right: 10px;
+}
