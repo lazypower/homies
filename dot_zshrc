@@ -23,3 +23,7 @@ fi
 if [ "$(type nvim)" != "nvim not found" ]; then
   export EDITOR=nvim
 fi
+
+if [ "$(type zoxide)" != "zoxide not found" ]; then
+  eval "$(zoxide init zsh)"
+fi
