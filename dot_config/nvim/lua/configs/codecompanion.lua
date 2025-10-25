@@ -19,7 +19,7 @@ require("codecompanion").setup({
             return require("codecompanion.adapters").extend("openai_compatible", {
               name = "qwen3_local",
               env = {
-                url = "http://voidengine:9000",
+                url = "http://127.0.0.1:9000",
                 api_key = "dummy_key", -- ramalama doesn't require real API key
               },
               headers = {
