@@ -8,6 +8,8 @@
 	"height": 36,
 	"modules-left": ["hyprland/workspaces", "hyprland/window"],
 	"modules-right": [
+    "cpu",
+    "custom/gpu-usage",
 		"pulseaudio",
 		"backlight",
 		"network",
@@ -85,11 +87,25 @@
 		"format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
 	},
 
+  "cpu": {
+    "format": "CPU: {usage}%",
+    "interval": 10
+  },
+
+  "custom/gpu-usage": {
+    "format": "{} {icon}",
+    "exec": "gpu-usage-waybar",
+    "return-type": "json",
+    "format-icons": "󰾲",
+    "on-click": "ghostty -e nvtop"
+  },
+
+
 	"pulseaudio": {
 		"format": "{icon} {volume}%",
 		"tooltip": false,
 		"format-muted": " Muted",
-		"on-click": "kitty wiremix",
+		"on-click": "flatpak run com.github.childishgiant.mixer",
 		"format-icons": {
 			"headphone": "",
 			"hands-free": "",
