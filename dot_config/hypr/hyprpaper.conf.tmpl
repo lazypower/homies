@@ -1,7 +1,11 @@
-preload = ~/Pictures/Wallpaper/walls-catppuccin-mocha/sushi.jpg
-
 #set the default wallpaper(s) seen on initial workspace(s) --depending on the number of monitors used
+{{ if eq .chezmoi.hostname "voidengine" }}
+preload = ~/Pictures/wallpaper/keyswitch.png
+wallpaper = , ~/Pictures/wallpaper/keyswitch.png
+{{ else if eq .chezmoi.hostname "exoframe" }}
+preload = ~/Pictures/Wallpaper/walls-catppuccin-mocha/sushi.jpg
 wallpaper = , ~/Pictures/Wallpaper/walls-catppuccin-mocha/sushi.jpg
+{{ end }}
 #enable splash text rendering over the wallpaper
 splash = true
 
