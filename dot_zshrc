@@ -1,3 +1,8 @@
+# OpenSpec shell completions
+fpath=("$HOME/.zsh/completions" $fpath)
+autoload -Uz compinit
+compinit
+
 export PATH=$HOME/.local/bin:$HOME/go/bin:$PATH
 
 # Bluefin homeberw location

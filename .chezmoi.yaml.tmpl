@@ -1,0 +1,10 @@
+{{- $role := promptChoiceOnce . "role" "Machine role" (list "personal" "work") -}}
+
+{{- $email := "chuck@linuxlab.sh" -}}
+{{- if eq $role "work" -}}
+{{-   $email = promptStringOnce . "email" "Work email address" -}}
+{{- end -}}
+
+data:
+  role: {{ $role | quote }}
+  email: {{ $email | quote }}

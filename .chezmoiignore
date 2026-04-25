@@ -1,1 +1,8 @@
 README.md
+.config/nvim/lazy-lock.json
+
+# Hyprland/Wayland - only relevant on Linux
+{{ if eq .chezmoi.os "darwin" }}
+.config/hypr
+.config/waybar
+{{ end }}

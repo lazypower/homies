@@ -1,0 +1,58 @@
+# Core tools - all machines
+brew "atuin"
+brew "direnv"
+brew "gh"
+brew "glow"
+brew "go"
+brew "jq"
+brew "just"
+brew "k9s"
+brew "kubernetes-cli"
+brew "neovim"
+brew "restic"
+brew "ripgrep"
+brew "shellcheck"
+brew "starship"
+brew "tmux"
+brew "tree"
+brew "uv"
+brew "watch"
+brew "yq"
+brew "zoxide"
+
+# Wolfi / supply-chain tooling
+brew "apko"
+brew "grype"
+brew "melange"
+
+{{ if eq .chezmoi.os "darwin" -}}
+# macOS
+brew "coreutils"
+brew "ffmpeg"
+tap "lazypower/tap"
+brew "lazypower/tap/continuity"
+cask "1password-cli"
+{{ end -}}
+
+{{ if eq .chezmoi.os "linux" -}}
+# Linux
+brew "btop"
+brew "dysk"
+brew "helm"
+brew "nmap"
+brew "ollama"
+brew "sqlite"
+brew "tea"
+brew "topgrade"
+{{ end -}}
+
+{{ if and (eq .chezmoi.os "darwin") (eq .role "personal") -}}
+# Work macOS
+brew "ios-deploy"
+brew "swift-format"
+brew "swiftformat"
+brew "swiftlint"
+brew "tea"
+brew "xcodegen"
+brew "yt-dlp"
+{{ end -}}

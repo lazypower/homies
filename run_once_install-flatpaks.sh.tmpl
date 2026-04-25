@@ -1,0 +1,27 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+set -eu
+
+flatpak install -y \
+  com.bambulab.BambuStudio \
+  com.usebottles.bottles \
+  com.cassidyjames.butler \
+  org.deskflow.deskflow \
+  im.dino.Dino \
+  com.discordapp.Discord \
+  org.freedesktop.Platform.ffmpeg-full/x86_64/24.08 \
+  be.alexandervanhee.gradia \
+  org.localsend.localsend_app \
+  com.obsproject.Studio \
+  md.obsidian.Obsidian \
+  org.nickvision.tubeconverter \
+  io.github.alainm23.planify \
+  it.mijorus.smile \
+  com.valvesoftware.Steam \
+  io.github.sigmasd.stimulator \
+  com.github.zocker_160.SyncThingy
+
+{{ else -}}
+#!/bin/bash
+# flatpaks are linux-only, nothing to do
+{{ end -}}
