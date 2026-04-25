@@ -1,48 +1,30 @@
-# 💻️ Homies 
+# Homies
 
-Welcome to my cozy corner of configuration chaos! 🎉
+My dotfiles, managed with [chezmoi](https://www.chezmoi.io).
 
-## 🤔 What's This All About?
+## What's in here
 
-Homies is where my dotfiles live, laugh, and occasionally crash my terminal. These are the configuration files that make my development environment feel like home - complete with all the quirks, shortcuts, and "why did I set it up this way?" moments that come with years of tinkering.
+- Shell config (zsh, starship, atuin, direnv, zoxide)
+- Neovim (NvChad-based)
+- Tmux + TPM (pulled via chezmoiexternal)
+- Git config + helpers
+- Terminal emulator configs (ghostty, kitty)
+- Hyprland/Wayland configs (Linux only, currently dormant)
+- Brewfile and flatpak bootstrap scripts
+- Topgrade config
 
-## 🎪 What's Inside This Circus?
+## Multi-machine setup
 
- - 🐚 Shell Scripts - Because who doesn't love a good alias party?
- - ⚡ Terminal Configs - Making the command line prettier than a sunset
- - 🎨 Editor Settings - My IDE knows me better than my therapist
- - 🔧 System Tweaks - The digital equivalent of rearranging furniture
- <!-- - 📦 Package Lists - All my favorite tools in one convenient shopping list -->
+Configs are templated for multiple machines — personal macOS, work macOS, Linux. On first init, chezmoi will prompt for machine role and work email if applicable.
 
-## 🚀 Quick Start (AKA "How to Make Your Computer Look Like Mine")
-
-I manage my dotfiles with [chezmoi](https://www.chezmoi.io) - so you'll need that first.
-Run the magic script (cross your fingers! 🤞)
+## Quick start
 
 ```
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/lazypower/homies.git
 ```
 
-> ⚠️ Fair Warning
->
-> These configs are like a well-worn pair of jeans - they fit me perfectly but might be weird on you. Feel free to fork, modify, or completely ignore anything that doesn't spark joy! ✨
+Re-run `chezmoi init` to update machine-specific settings.
 
+## Notes
 
-🤝 Contributing
-
-Found a bug? Have a cool tweak? Want to argue about tabs vs spaces?
-
- - 🐛 Issues: For when things go sideways
- - 🔀 Pull Requests: For when you want to make things better
- - 💬 Discussions: For philosophical debates about vim vs emacs
-
-🙏 Acknowledgments
-
-Shoutout to:
-
-  - Stack Overflow - My real computer science degree 🎓
-  - GitHub dotfiles community - Y'all are the real MVPs
-  - Coffee ☕ - The fuel that powers all late-night config sessions
-  - My rubber duck 🦆 - The best debugging partner
-
-**Remember**: Home is where the ~ is! 🏡
+These are my configs. Fork freely, but they're shaped for my workflow.

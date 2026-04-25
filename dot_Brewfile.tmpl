@@ -29,9 +29,11 @@ brew "melange"
 # macOS
 brew "coreutils"
 brew "ffmpeg"
+brew "mas"
 tap "lazypower/tap"
 brew "lazypower/tap/continuity"
 cask "1password-cli"
+cask "claude-code"
 {{ end -}}
 
 {{ if eq .chezmoi.os "linux" -}}
@@ -47,7 +49,7 @@ brew "topgrade"
 {{ end -}}
 
 {{ if and (eq .chezmoi.os "darwin") (eq .role "personal") -}}
-# Work macOS
+# Personal macOS
 brew "ios-deploy"
 brew "swift-format"
 brew "swiftformat"
@@ -55,4 +57,19 @@ brew "swiftlint"
 brew "tea"
 brew "xcodegen"
 brew "yt-dlp"
+cask "chatgpt"
+cask "discord"
+mas "1Password for Safari", id: 1569813296
+mas "Affinity Designer 2", id: 1616831348
+mas "Amphetamine", id: 937984704
+mas "Developer", id: 640199958
+mas "Final Cut Pro", id: 424389933
+mas "Kagi for Safari", id: 1622835804
+mas "Keynote", id: 409183694
+mas "Logic Pro", id: 634148309
+mas "Numbers", id: 409203825
+mas "Obsidian Web Clipper", id: 6720708363
+mas "Pages", id: 409201541
+mas "Tailscale", id: 1475387142
+mas "Xcode", id: 497799835
 {{ end -}}

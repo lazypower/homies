@@ -5,7 +5,7 @@ compinit
 
 export PATH=$HOME/.local/bin:$HOME/go/bin:$PATH
 
-# Bluefin homeberw location
+# Bluefin homebrew location
 if [ -d /home/linuxbrew ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
