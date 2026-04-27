@@ -4,6 +4,20 @@
 [user]
   name = Chuck Butler
   email = {{ .email }}
+{{ if eq .role "work" -}}
+[commit]
+  gpgsign = true
+[tag]
+  gpgsign = true
+[gpg]
+  format = x509
+[gpg "x509"]
+  program = gitsign
+[gitsign]
+  connectorID = https://accounts.google.com
+[url "ssh://git@github.com/"]
+  insteadOf = https://github.com/
+{{ end -}}
 
 [color]
     ui = auto
