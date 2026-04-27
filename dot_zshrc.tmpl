@@ -5,6 +5,13 @@ compinit
 
 export PATH=$HOME/.local/bin:$HOME/go/bin:$PATH
 
+{{ if eq .role "work" -}}
+# GCloud Homebrew needs
+if [ -d /opt/homebrew/share/google-cloud-sdk ]; then
+  export PATH=/opt/homebrew/share/google-cloud-sdk/bin:"$PATH"
+fi
+
+{{ end -}}
 # Bluefin homebrew location
 if [ -d /home/linuxbrew ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
@@ -32,3 +39,7 @@ fi
 if [ "$(type zoxide)" != "zoxide not found" ]; then
   eval "$(zoxide init zsh)"
 fi
+{{ if eq .role "work" }}
+### Gitsign credential cache
+export GITSIGN_CREDENTIAL_CACHE="$HOME/Library/Caches/sigstore/gitsign/cache.sock"
+{{ end -}}
