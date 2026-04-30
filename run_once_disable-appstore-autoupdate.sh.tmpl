@@ -1,0 +1,9 @@
+{{ if and (eq .chezmoi.os "darwin") (eq .role "work") -}}
+#!/bin/bash
+set -eu
+
+defaults write com.apple.commerce AutoUpdate -bool false
+{{ else -}}
+#!/bin/bash
+# no-op: only applies to macOS work profile
+{{ end -}}
