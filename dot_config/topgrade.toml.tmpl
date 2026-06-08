@@ -29,6 +29,9 @@
 
 # Disable specific steps - same options as the command line flag
 # disable = ["system", "emacs"]
+{{ if eq .role "work" -}}
+disable = ["mas"]
+{{ end -}}
 
 # Run these steps before all others
 # first = ["chezmoi"]
