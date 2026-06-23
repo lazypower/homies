@@ -93,13 +93,29 @@ Keep Codex in the BREAK seat in both modes — read-only, never let it fix.
 
 ## Running Codex (operational — learned the hard way)
 
-- **Wrap every invocation in a timeout.** `codex exec`/`codex review` hangs on
-  roughly 1 in 3 calls — zero output, never returns. Always run it as
-  `timeout 300 codex exec …` (background it; set any readiness watcher to the
-  same bound). On timeout, kill + retry **once**; if it hangs again, proceed on
-  the tests. An un-timed-out call means you sit idle for many minutes before you
-  notice. `codex exec` also buffers all output until completion — 0 bytes
-  mid-run is normal, not proof of a hang; the timeout is what distinguishes them.
+- **Prefer the MCP path for BREAK — it makes hangs observable.** Run Codex via
+  `codex mcp-server` (stdio) instead of raw `codex exec`/`codex review`. The MCP
+  server streams `codex/event` notifications continuously (`task_started`,
+  `agent_message_content_delta`, `token_count`, `task_complete`), so you get a
+  live heartbeat instead of staring at 0 bytes. Use the bundled driver:
+  ```bash
+  python3 ~/.claude/skills/codex-loop/codex_break.py \
+    --prompt-file <frame+ask>.txt --effort medium --silence 120 --wall 420
+  ```
+  It applies a **silence-based timeout** (kill only if *no event* for `--silence`
+  seconds) plus a wall-clock backstop, prints heartbeats to stderr, and returns
+  Codex's structured `content` on stdout. This converts a *blind* hang into an
+  *observable* one — the exact "you go to sleep, it hangs, shit gets weird"
+  failure. Resume a thread with `codex-reply` + the `threadId` if you need a
+  follow-up without a cold start. (MCP doesn't make Codex internally more
+  reliable; it makes a wedge *visible* so you stop waiting on it.)
+- **Raw-shell fallback: wrap every invocation in a timeout.** If you must use
+  `codex exec`/`codex review` directly, they hang on roughly 1 in 3 calls — zero
+  output, never returns. Always run as `timeout 300 codex exec …` (background it;
+  set any readiness watcher to the same bound). On timeout, kill + retry **once**;
+  if it hangs again, proceed on the tests. `codex exec` buffers all output until
+  completion — 0 bytes mid-run is normal, not proof of a hang; the timeout is what
+  distinguishes them. (The MCP path above removes this ambiguity — prefer it.)
 - **One BREAK per phase; tests are the gate.** Run Codex once per phase, triage,
   fix, then PROVE the fixes with your own tests (unit + integration). Do **not**
   reflexively re-run Codex to "confirm" — that compounds the hang cost and walks
@@ -140,12 +156,38 @@ Codex output is **input, not a mandate.** Bucket every finding:
 
 ## The scope governor
 
-**HARD CAP ~5 adversarial rounds**, then stop and bring the human a checkpoint:
-- remaining findings
+**HARD CAP ~5 adversarial rounds.** This is a *brake, not a status report.* At the
+cap you **stop by default** and bring the human a checkpoint; continuing to round 6+
+requires **explicit user go-ahead**, not operator momentum. "Keep going while
+converging" (invariant #2) governs rounds *within* the cap — it is **not** a license
+to ride past it because each round still improves something. If you find yourself at
+round 6+ without having asked, the governor has already failed.
+
+Checkpoint payload:
+- remaining findings (each classified — see protocol below)
 - accepted fixes
 - rejected out-of-scope threats (and why)
 - **complexity delta** — how much cleverness this added
 - whether the feature **still matches the original user promise**
+
+### Checkpoint decision protocol (resolves disputed findings)
+
+The exit criteria are judgment calls, so a determined adversary can keep reframing
+"reasonable" while ASSESS keeps replying "out of scope" — a vibes stalemate. Break it
+by forcing every remaining finding into exactly one bucket, **with a named owner**:
+
+| Bucket | Meaning | Owner |
+|---|---|---|
+| `fix-now` | in-scope correctness/safety defect | Claude (this round) |
+| `prove-with-test` | claimed risk on existing behavior → convert to a passing test | Claude |
+| `document-boundary` | out-of-model; record why and move on | Claude + user |
+| `separate-decision` | real but a product/scope pivot → its own ticket, not folded in | **user** |
+
+**Default stop rule:** the loop exits when every in-scope **P1/P2** defect has either a
+landed fix or a red→green test, and no finding remains unclassified. A finding BREAK
+calls "still exploitable" that ASSESS calls "out of scope" is **not** left open — it
+resolves into `document-boundary` or `separate-decision`, with the user as tiebreaker
+on the latter. Disagreement forces a *classification*, never another round.
 
 ### Exit criteria (stop when these hold — NOT when the adversary runs dry)
 
