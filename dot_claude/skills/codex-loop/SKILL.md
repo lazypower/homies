@@ -15,11 +15,11 @@ user's, and it must be made **explicit before round 1**, not discovered at round
 
 ## Hard invariants (do not violate)
 
-1. **Cross-model only.** The BREAK seat must be a *different model* — Codex via its
-   CLI. Never let Claude (including Claude subagents/workflows) adversarially review
-   Claude's own work. That blind spot is the entire reason for a combined front.
+1. **Cross-model only.** The BREAK seat must be a *different model* — Codex via the
+   MCP driver. Never let Claude (including Claude subagents/workflows) adversarially
+   review Claude's own work. That blind spot is the entire reason for a combined front.
    - BUILD seat: Claude (workflows fine).
-   - BREAK seat: **Codex CLI only** — it cannot run inside a Claude Workflow.
+   - BREAK seat: **Codex only** (via `codex_break.py`) — it cannot run inside a Claude Workflow.
    - FIX seat: Claude, but fixes must address **Codex's** findings, not Claude self-review.
    - VERIFY/run-tests: either model (mechanical, not judgment).
 
@@ -63,59 +63,95 @@ Step 0 pays off most — without a written frame, the adversary invents attacks 
 problem that may not exist (falsify your own premises by measurement *first*).
 
 - BUILD = Claude drafts / refines the design or plan.
-- BREAK = `codex exec` read-only, fed the Step-0 frame so it attacks the real boundary:
+- BREAK = Codex read-only via the MCP driver (see "Running Codex"), fed the Step-0
+  frame so it attacks the real boundary. Write the frame+ask to a file, then run:
   ```bash
-  codex exec "Adversarial design review — find where this PLAN fails; do not write code.
+  cat > /tmp/break.txt <<'EOF'
+  Adversarial design review — find where this PLAN fails; do not write code.
   Product promise: <...>. In scope: <user surface>. Out of scope: <FS-omnipotence /
   things we don't control>. Hunt for: silent data loss by design, states that don't
-  fail closed, invariants the design can't hold, complexity disproportionate to threat."
+  fail closed, invariants the design can't hold, complexity disproportionate to threat.
+  EOF
+  python3 ~/.claude/skills/codex-loop/codex_break.py \
+    --prompt-file /tmp/break.txt --cwd <repo> --effort medium --silence 120 --wall 420
   ```
 - EXIT when the *design* has no silent-data-loss path, fails closed by construction, and
   complexity is proportional. Then graduate to Mode B for the implementation.
 
 ### Mode B — Build / break (a diff exists)
 
-The subject is code. BUILD = implement/fix on a branch or worktree; BREAK = `codex review`:
+The subject is code. BUILD = implement/fix on a branch or worktree. BREAK = Codex
+reviewing the diff via the MCP driver, framed as an exec prompt against an **explicit
+diff range**. Do NOT reach for `codex review --base <branch> "<prompt>"`: that form is
+rejected by the CLI parser (see "Running Codex"), and `--base <branch>` on a worktree
+diffs against the *current* branch tip, not the PR's branch point.
+
+Compute the merge-base, write the frame, run the driver from the worktree:
 ```bash
-codex review --base <base-branch>     # diff vs base branch (usual case)
-codex review --uncommitted            # staged + unstaged + untracked
-codex review --commit <sha>           # a single commit
-```
-Add a custom adversarial prompt to carry the frame (works on `review` or `exec`):
-```bash
-codex review --base <base-branch> "Adversarial review. Product promise: <...>.
-In scope: user surface via CLI/runtime. Out of scope: an actor who already owns the
-data dir. Hunt for reasonable CLI/user paths that silently destroy/corrupt data or
-leave a state that does not fail closed."
+cd <worktree>
+MB=$(git merge-base HEAD <base-branch>)   # e.g. main; NOT the live branch tip
+cat > /tmp/break.txt <<EOF
+You are the BREAK seat in an adversarial code review. Read-only; do NOT write code.
+Inspect the diff with:  git diff ${MB}..HEAD
+Product promise: <...>. In scope: user surface via CLI/runtime. Out of scope: an actor
+who already owns the data dir. Hunt for reasonable CLI/user paths that silently
+destroy/corrupt data or leave a state that does not fail closed.
+Report findings as: [P1|P2|P3] <one line> — <file>:<line>. Then stop.
+EOF
+python3 ~/.claude/skills/codex-loop/codex_break.py \
+  --prompt-file /tmp/break.txt --cwd <worktree> --effort medium --silence 120 --wall 420
 ```
 
 Keep Codex in the BREAK seat in both modes — read-only, never let it fix.
 
 ## Running Codex (operational — learned the hard way)
 
-- **Prefer the MCP path for BREAK — it makes hangs observable.** Run Codex via
-  `codex mcp-server` (stdio) instead of raw `codex exec`/`codex review`. The MCP
-  server streams `codex/event` notifications continuously (`task_started`,
-  `agent_message_content_delta`, `token_count`, `task_complete`), so you get a
-  live heartbeat instead of staring at 0 bytes. Use the bundled driver:
+- **The MCP driver IS the BREAK path — use it for both modes, not as a fallback.**
+  Run Codex via `codex mcp-server` (stdio) through the bundled driver:
   ```bash
   python3 ~/.claude/skills/codex-loop/codex_break.py \
-    --prompt-file <frame+ask>.txt --effort medium --silence 120 --wall 420
+    --prompt-file <frame+ask>.txt --cwd <repo-or-worktree> --effort medium --silence 120 --wall 420
   ```
-  It applies a **silence-based timeout** (kill only if *no event* for `--silence`
-  seconds) plus a wall-clock backstop, prints heartbeats to stderr, and returns
-  Codex's structured `content` on stdout. This converts a *blind* hang into an
-  *observable* one — the exact "you go to sleep, it hangs, shit gets weird"
-  failure. Resume a thread with `codex-reply` + the `threadId` if you need a
-  follow-up without a cold start. (MCP doesn't make Codex internally more
-  reliable; it makes a wedge *visible* so you stop waiting on it.)
-- **Raw-shell fallback: wrap every invocation in a timeout.** If you must use
-  `codex exec`/`codex review` directly, they hang on roughly 1 in 3 calls — zero
-  output, never returns. Always run as `timeout 300 codex exec …` (background it;
-  set any readiness watcher to the same bound). On timeout, kill + retry **once**;
-  if it hangs again, proceed on the tests. `codex exec` buffers all output until
-  completion — 0 bytes mid-run is normal, not proof of a hang; the timeout is what
-  distinguishes them. (The MCP path above removes this ambiguity — prefer it.)
+  It streams `codex/event` heartbeats (`task_started`, `agent_message_content_delta`,
+  `token_count`, `task_complete`) to stderr, applies a **silence-based timeout** (kill
+  only if *no event* for `--silence`s) plus a wall backstop, and prints Codex's findings
+  on stdout. Two reasons it's primary, not optional:
+  1. **It carries the Step-0 frame.** The MCP `codex` tool takes a prompt. Raw
+     `codex review --base <branch>` and `codex review --uncommitted` **reject a
+     `[PROMPT]` argument** (`error: the argument '--base <BRANCH>' cannot be used with
+     '[PROMPT]'` — the stdin `-` form is rejected too). So the raw review path *cannot*
+     receive your adversarial frame at all; the MCP/exec path is the only one that can.
+  2. **It makes hangs observable** — a live heartbeat instead of staring at 0 bytes,
+     converting a *blind* hang into an *observable* one.
+  `codex mcp-server` exposes only `codex` and `codex-reply` (there is **no `review`
+  tool**), so a diff review is an exec prompt that runs `git diff <merge-base>..HEAD`
+  itself. Resume a thread with `codex-reply` + the `threadId` for a follow-up without a
+  cold start. (Validated 2026-06-29 against mono#44067: 26–73s, exit 0, reproduced the
+  same P1s as a raw `codex review` while also carrying the frame.)
+- **The reviewer runs in an isolated, capability-stripped `CODEX_HOME`.** The driver
+  defaults `--codex-home ~/.codex-loop`, a minimal config the Codex desktop app never
+  rewrites. It deliberately loads **no MCP servers and no connectors**: no `node_repl`
+  (the computer-use / browser-control client), no marketplace plugins (browser, sites),
+  and `[features] apps = false` to kill the hosted `codex_apps` connector
+  (sites/deploy/documents). An autonomous adversarial reviewer reads code and runs
+  read-only shell (`git diff`) — it does not control the machine, drive a browser, or
+  deploy anything. Verified: a review under this home starts with `mcp_startup_complete`
+  and **zero servers**. `auth.json` is symlinked to `~/.codex/auth.json` so token
+  refreshes stay in sync. To add a capability back, edit `~/.codex-loop/config.toml`
+  deliberately — never point the loop at the desktop app's `~/.codex`.
+- **Always diff against the merge-base, never the live branch tip.** `--base main`
+  (or a bare `git diff main`) on a worktree cut from an old main diffs against the
+  *current* main tip — possibly hundreds of unrelated commits, an enormous bogus diff
+  that churns for minutes and reads as a hang. Use `MB=$(git merge-base HEAD <base>)`
+  and diff `${MB}..HEAD`. (On mono#44067 this was the difference between 12 files and
+  855 files.)
+- **Raw-shell fallback (only if the driver is unavailable).** `codex exec "<prompt>"`
+  accepts a prompt and works; wrap it in `timeout 300` (background it; set any readiness
+  watcher to the same bound), kill + retry **once** on timeout, then proceed on the
+  tests. `codex review` does NOT take a custom prompt — run it bare against an explicit
+  ref (`codex review --base <merge-base-sha>`) and accept its built-in review prompt.
+  `codex exec` buffers all output until completion — 0 bytes mid-run is normal, not a
+  hang; the timeout distinguishes them.
 - **One BREAK per phase; tests are the gate.** Run Codex once per phase, triage,
   fix, then PROVE the fixes with your own tests (unit + integration). Do **not**
   reflexively re-run Codex to "confirm" — that compounds the hang cost and walks
@@ -131,7 +167,7 @@ Step 0  FRAME      (Claude + user)  — product promise + threat model + done
   │
   ├─► BUILD        (Claude)         — Mode A: draft design   | Mode B: implement / fix
   │
-  ├─► BREAK        (Codex CLI)      — Mode A: codex exec      | Mode B: codex review
+  ├─► BREAK        (Codex via MCP)  — both modes: codex_break.py against the diff/plan
   │
   ├─► ASSESS       (Claude)         — triage every finding through the rubric
   │

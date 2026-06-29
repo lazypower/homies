@@ -12,12 +12,17 @@ ap.add_argument("--silence", type=float, default=90.0)
 ap.add_argument("--wall", type=float, default=360.0)
 ap.add_argument("--effort", default="medium")
 ap.add_argument("--cwd", default=os.getcwd())
+ap.add_argument("--codex-home", default=os.path.expanduser("~/.codex-loop"),
+                help="Isolated CODEX_HOME so the reviewer has NO computer-use / "
+                     "browser / node_repl surface — only what this dir's config allows.")
 a = ap.parse_args()
 
 prompt = open(a.prompt_file).read()
+env = os.environ.copy()
+env["CODEX_HOME"] = os.path.expanduser(a.codex_home)
 proc = subprocess.Popen(["codex", "mcp-server"], stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                        text=True, bufsize=1, cwd=a.cwd)
+                        text=True, bufsize=1, cwd=a.cwd, env=env)
 
 def send(obj):
     proc.stdin.write(json.dumps(obj) + "\n"); proc.stdin.flush()
