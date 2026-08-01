@@ -17,6 +17,7 @@ Your memory lives in continuity. Reach for it naturally:
 - **`-d` (L2)**: Max 40000 characters. Full content, retrieved on-demand only.
 
 Before searching the codebase for prior decisions, conventions, or context — check continuity first. If you learn something worth keeping, store it immediately.
+<!-- /continuity:managed -->
 
 ## Style
 
