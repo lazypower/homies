@@ -29,9 +29,17 @@
 
 # Disable specific steps - same options as the command line flag
 # disable = ["system", "emacs"]
+#
+# nix: Determinate Nix is flake-only here - no channels, empty nix-env profile.
+# Topgrade's `nix` step is one unit (nix-channel --update, nix-env --upgrade,
+# determinate-nixd upgrade), so there's no way to skip just the deprecated
+# nix-channel call. Everything it does is either a no-op or handled by
+# determinate-nixd's own auto-upgrade, and the sudo prompt blocks the run.
 {{ if eq .role "work" -}}
-disable = ["mas"]
-{{ end -}}
+disable = ["nix", "mas"]
+{{ else -}}
+disable = ["nix"]
+{{ end }}
 
 # Run these steps before all others
 # first = ["chezmoi"]
