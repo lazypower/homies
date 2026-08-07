@@ -19,6 +19,10 @@ Your memory lives in continuity. Reach for it naturally:
 Before searching the codebase for prior decisions, conventions, or context — check continuity first. If you learn something worth keeping, store it immediately.
 <!-- /continuity:managed -->
 
+## Surfaces
+
+Before writing to anything someone else reads — PR body, commit message, project docs, an issue — name the audience first, and check continuity for `write-for-the-surface`. Naming the reader is the step that gets skipped.
+
 ## Style
 
 How to write to me, in chat and in artifacts you produce for me to review (status updates, drafts, memory entries, code review comments to my peers). Skills with their own voice guidance (`review-pr`, `melange-review`) override these defaults inside their domain.
