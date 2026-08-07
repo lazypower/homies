@@ -3,20 +3,13 @@
 <!-- continuity:managed -->
 ## Memory
 
-When you want to remember something or are asked to remember something, always use the `continuity` CLI — never the file-based markdown memory system. Do not create MEMORY.md files, do not write to memory directories, do not use frontmatter-based memory files. Those are not your memory system.
+Continuity is your memory — use it instead of the file-based markdown memory system. Do not create MEMORY.md files, write to memory directories, or use frontmatter memory files; those are not your memory system.
 
-Your memory lives in continuity. Reach for it naturally:
-- Remembering something: `continuity remember -c <category> -n <name> -s "summary" -b "body"`
-- Looking something up: `continuity search "<query>"`
-- Browsing what you know: `continuity tree [uri]`
-- Understanding who you're working with: `continuity profile`
+The memory tools are exposed over MCP as the `mcp__continuity__*` tools; their schemas describe how to call them. If the MCP server isn't registered, the same operations are available as `continuity` CLI verbs.
 
-**Tier character limits — content beyond these is hard-truncated:**
-- **`-s` (L0)**: Max 200 characters. One sentence. Injected into every session.
-- **`-b` (L1)**: Max 2000 characters (~300 words). Primary context tier. Compress aggressively.
-- **`-d` (L2)**: Max 40000 characters. Full content, retrieved on-demand only.
+Before searching the codebase for prior decisions, conventions, or context, check continuity first — and store anything worth keeping the moment you learn it.
 
-Before searching the codebase for prior decisions, conventions, or context — check continuity first. If you learn something worth keeping, store it immediately.
+**Memory is not immutable; it is accountable.** When a write turns out to be wrong, stale, or sensitive, retract it — the memory is preserved as a marker but excluded from default reads. Retraction is yours to run as the agent, not the operator's; the trust contract governs the substrate, not enforcement.
 <!-- /continuity:managed -->
 
 ## Surfaces
