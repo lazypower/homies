@@ -12,3 +12,7 @@ Apply these across repositories unless a repo-local AGENTS.md explicitly overrid
 * Measure usefulness, not cleverness. Optimize for readable, testable, observable behavior that solves the actual problem rather than demonstrating sophistication.
 
 These are design heuristics, not immutable rules. When a principle conflicts with the domain or introduces unnecessary complexity, explain the tradeoff instead of applying the rule mechanically.
+
+## Tooling
+
+When presented with a gitea link, use the gitea_mcp adapter before the tea cli or shell tools.
