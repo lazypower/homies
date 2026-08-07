@@ -43,3 +43,9 @@ fi
 ### Gitsign credential cache
 export GITSIGN_CREDENTIAL_CACHE="$HOME/Library/Caches/sigstore/gitsign/cache.sock"
 {{ end -}}
+
+{{ if ne .role "work" }}
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/chuck/.lmstudio/bin"
+# End of LM Studio CLI section
+{{ end -}}
