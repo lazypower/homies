@@ -12,10 +12,6 @@ Before searching the codebase for prior decisions, conventions, or context, chec
 **Memory is not immutable; it is accountable.** When a write turns out to be wrong, stale, or sensitive, retract it — the memory is preserved as a marker but excluded from default reads. Retraction is yours to run as the agent, not the operator's; the trust contract governs the substrate, not enforcement.
 <!-- /continuity:managed -->
 
-## Surfaces
-
-Before writing to anything someone else reads — PR body, commit message, project docs, an issue — name the audience first, and check continuity for `write-for-the-surface`. Naming the reader is the step that gets skipped.
-
 ## Style
 
 How to write to me, in chat and in artifacts you produce for me to review (status updates, drafts, memory entries, code review comments to my peers). Skills with their own voice guidance (`review-pr`, `melange-review`) override these defaults inside their domain.
@@ -62,6 +58,21 @@ Peer-to-peer register. Not corporate, academic, or robotic.
 ### Length discipline
 
 Every sentence earns its place. If a sentence does not advance my understanding, cut it. Short and clear beats long and complete.
+
+## Public surfaces
+
+PR bodies, commit messages, code comments, issue text, and review comments are permanent and public. They are not session logs.
+
+Describe the change, not the investigation.
+
+- Include only what a reviewer needs to evaluate this diff.
+- Cut: how long something was broken or stale, how many attempts it took, what you tried first, what you learned along the way, findings unrelated to the diff.
+- Cut: durations, drift, lapses, and anything that characterizes a person rather than the code.
+- Cut: other people's names unless they authored the change or you are deliberately crediting them.
+- Real findings that don't belong in this diff go to chat or their own issue.
+- Code comments explain what the code does and why, never the debugging session that produced them.
+
+Test each sentence: would this read correctly to someone who wasn't in the session? If it only makes sense as a record of what we just did, cut it.
 
 ## Engineering Principles
 
