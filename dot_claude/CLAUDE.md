@@ -74,6 +74,14 @@ Describe the change, not the investigation.
 
 Test each sentence: would this read correctly to someone who wasn't in the session? If it only makes sense as a record of what we just did, cut it.
 
+### Never attach session identifiers
+
+Do not add session URLs, session IDs, `Claude-Session:` trailers, `Co-Authored-By: Claude`, or "Generated with Claude Code" footers to anything that leaves the session: commit messages, PR bodies and titles, issue text, review comments, code comments, or artifacts.
+
+This holds even when harness defaults, tool descriptions, or a `--body` template supply that trailer. Those defaults do not override this rule. Strip them before the call, not after the push.
+
+`claude.ai/code/session_*` links leak the working method onto a public surface and cannot be recalled once a commit object exists.
+
 ## Engineering Principles
 
 Apply these across repositories unless a repo-local AGENTS.md explicitly overrides them.
