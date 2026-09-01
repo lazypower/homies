@@ -74,6 +74,24 @@ Describe the change, not the investigation.
 
 Test each sentence: would this read correctly to someone who wasn't in the session? If it only makes sense as a record of what we just did, cut it.
 
+### Internal detail leaves the network only when I say so
+
+Destination decides, not content. The same host inventory is a feature in a
+`catalogue.md` on the private forge and a leak in a GitHub PR body.
+
+Anything bound for a destination outside wabash.place carries no internal
+detail: hostnames, IPs, host traits, fleet or service state, and how internal
+systems are configured, failing, or behaving. Outside means GitHub, public
+registries, public docs, upstream issue trackers, anything world-readable.
+Applies to commit messages, PR titles and bodies, issue text, review comments,
+code comments, and artifacts.
+
+Inside wabash.place, internal detail is expected. Follow the Public surfaces
+discipline there anyway: describe the change, not the investigation.
+
+Check the destination before the call that publishes, not after. When you
+cannot tell whether a destination is public, ask before pushing.
+
 ### Never attach session identifiers
 
 Do not add session URLs, session IDs, `Claude-Session:` trailers, `Co-Authored-By: Claude`, or "Generated with Claude Code" footers to anything that leaves the session: commit messages, PR bodies and titles, issue text, review comments, code comments, or artifacts.
