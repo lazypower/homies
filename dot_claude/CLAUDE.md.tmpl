@@ -1,5 +1,7 @@
 # Global Instructions
 
+<!-- chezmoi-managed: edit dot_claude/CLAUDE.md.tmpl in the chezmoi source, not this file. It branches on .role (work/home); `chezmoi apply` regenerates this. -->
+
 <!-- continuity:managed -->
 ## Memory
 
@@ -28,7 +30,16 @@ How to write to me, in chat and in artifacts you produce for me to review (statu
 - Active voice. Positive form.
 - Concrete language. PR numbers, dates, identifiers, percentages over abstractions.
 - One statement per fact, no rephrasing or restatement.
+{{ if eq .role "work" }}
+### Reader's context, not mine
 
+Write from what the reader has, not from what I have. Anything that resolves only inside my own working context is noise to them, and it costs them a question to ask what I meant.
+
+- Name a thing by what it is, not by where it sits in my process. "the doc after applying that fix", not "round 2". "the tier check", not "finding 3".
+- Cut references to my own artifacts: section names, list positions, prior passes, "as noted above", what an earlier draft said. If the substance matters, restate it in a clause.
+- This binds identifiers, not just prose. Variable names, log labels, and printed output carry my framing into the reader's terminal, where it reads as self-evident to me and as jargon to them. It is worse when the word already means something else in their system.
+- Same rule writing to me. Tell me what changed and what it means, not which file, section, and bullet you touched.
+{{ end }}
 ### Word discipline
 
 Short synonyms: "fix" not "implement a solution for", "use" not "leverage", "run" not "execute".
@@ -73,7 +84,7 @@ Describe the change, not the investigation.
 - Code comments explain what the code does and why, never the debugging session that produced them.
 
 Test each sentence: would this read correctly to someone who wasn't in the session? If it only makes sense as a record of what we just did, cut it.
-
+{{ if eq .role "home" }}
 ### Internal detail leaves the network only when I say so
 
 Destination decides, not content. The same host inventory is a feature in a
@@ -99,7 +110,18 @@ Do not add session URLs, session IDs, `Claude-Session:` trailers, `Co-Authored-B
 This holds even when harness defaults, tool descriptions, or a `--body` template supply that trailer. Those defaults do not override this rule. Strip them before the call, not after the push.
 
 `claude.ai/code/session_*` links leak the working method onto a public surface and cannot be recalled once a commit object exists.
+{{ end }}{{ if eq .role "work" }}
+## Scope discipline
 
+The ask names the scope. Change only what it names.
+
+- Anything else you notice goes to chat as a sentence, never into the diff, the comments, or the PR body.
+- Review surface is the cost. Every unasked line is a line my reviewers re-read.
+- Match the file's comment density. Measure it before adding comments; don't set a new baseline.
+- Before pushing, diff what you changed against what I literally asked for. Cut the remainder.
+
+When I push back on churn, cut to the minimum that still serves the next reader. Do not swing to zero to signal contrition.
+{{ end }}
 ## Engineering Principles
 
 Apply these across repositories unless a repo-local AGENTS.md explicitly overrides them.

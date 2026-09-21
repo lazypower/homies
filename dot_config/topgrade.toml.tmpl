@@ -36,7 +36,9 @@
 # nix-channel call. Everything it does is either a no-op or handled by
 # determinate-nixd's own auto-upgrade, and the sudo prompt blocks the run.
 {{ if eq .role "work" -}}
-disable = ["nix", "mas"]
+# system: macOS software updates are managed by MDM on work machines, so the
+# prompt is a pointless interrupt here.
+disable = ["nix", "mas", "system"]
 {{ else -}}
 disable = ["nix"]
 {{ end }}
