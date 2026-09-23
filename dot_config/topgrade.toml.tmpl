@@ -152,6 +152,11 @@ ignore_failures = ["colima", "containers", "chezmoi"]
 [commands]
 # "Python Environment" = "~/dev/.env/bin/pip install -i https://pypi.python.org/simple -U --upgrade-strategy eager jupyter"
 # "Custom command using interactive shell (unix)" = "-i vim_upgrade"
+{{ if eq .role "work" -}}
+# cg/dl are built from chainguard-dev/mono via a detached worktree at
+# origin/main, so this doesn't disturb the working checkout.
+"cg + dl" = "cd ~/Code/chainguard-dev/mono && git fetch -q origin main && d=$(mktemp -d) && git worktree add -q --detach $d origin/main && (cd $d/cg && go build -o $(go env GOPATH)/bin/cg .) && (cd $d/dl && go build -o $(go env GOPATH)/bin/dl .); git worktree remove --force $d"
+{{ end -}}
 
 
 [python]
