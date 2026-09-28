@@ -84,7 +84,18 @@ Describe the change, not the investigation.
 - Code comments explain what the code does and why, never the debugging session that produced them.
 
 Test each sentence: would this read correctly to someone who wasn't in the session? If it only makes sense as a record of what we just did, cut it.
-{{ if eq .role "home" }}
+{{ if eq .role "work" }}
+### PR body shape
+
+Every PR body has two H1 sections, in this order:
+
+- `# For humans`: the intent in one to three sentences. What the PR does, and how to use it if there is a knob. Name any merge-order dependency here. A reviewer should be oriented without reading further.
+- `# For the machines`: the detailed body. Design, why, limits, test plan.
+
+Example human section: "Adds a killswitch for manifest-gen auto-merge. Commit `.github/automerge-halt` to stereo `main` to stop future auto-merge approvals, and revert it to resume."
+
+This applies to PRs I open and to PR bodies I rewrite. Repo PR templates and required sections (release notes, test plans) go inside "For the machines".
+{{ end }}{{ if eq .role "home" }}
 ### Internal detail leaves the network only when I say so
 
 Destination decides, not content. The same host inventory is a feature in a
